@@ -14,6 +14,7 @@ func RunServer(repo *handlers.Repository) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(NoSurf)
+	r.Use(SessionLoad)
 
 	r.Get("/", repo.HomeHandler)
 	r.Get("/about", repo.AboutHandler)
