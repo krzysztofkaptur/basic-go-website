@@ -3,14 +3,38 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/krzysztofkaptur/basic-go-website/pkg/config"
+	"github.com/krzysztofkaptur/basic-go-website/pkg/models"
 	render "github.com/krzysztofkaptur/basic-go-website/pkg/render"
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home")
+var Repo *Repository
 
+type Repository struct {
+	App *config.AppConfig
 }
 
-func AboutHandler(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about")
+func NewRepo(a *config.AppConfig) *Repository {
+	return &Repository{
+		App: a,
+	}
+}
+
+func NewHandlers(r *Repository) {
+	Repo = r
+}
+
+func (repo *Repository) HomeHandler(w http.ResponseWriter, r *http.Request) {
+
+	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{})
+}
+
+func (repo *Repository) AboutHandler(w http.ResponseWriter, r *http.Request) {
+	stringMap := map[string]string{
+		"test": "Hello, again",
+	}
+
+	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }

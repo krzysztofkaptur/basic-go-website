@@ -1,16 +1,29 @@
 package main
 
 import (
-	"net/http"
+	"log"
 
+	"github.com/krzysztofkaptur/basic-go-website/pkg/config"
 	handlers "github.com/krzysztofkaptur/basic-go-website/pkg/handlers"
+	"github.com/krzysztofkaptur/basic-go-website/pkg/render"
 )
 
 func main() {
-	server := http.NewServeMux()
+	app := config.AppConfig{}
 
-	server.HandleFunc("GET /", handlers.HomeHandler)
-	server.HandleFunc("GET /about", handlers.AboutHandler)
+	tc, err := render.CreateCacheTemplate()
+	if err != nil {
+		log.Fatal("cannot create template cache")
+	}
 
-	http.ListenAndServe(":8080", server)
+	app.TemplateCache = tc
+	app.UseCache = false
+
+	repo := handlers.NewRepo(&app)
+
+	handlers.NewHandlers(repo)
+
+	render.NewTemplates(&app)
+
+	RunServer(repo)
 }
